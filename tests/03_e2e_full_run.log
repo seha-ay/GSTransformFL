@@ -1,0 +1,123 @@
+
+  GSTransformFL — E2E Test Data Preparation
+  ──────────────────────────────────────────────────
+  Output directory: /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw
+
+  [1/4] Downloading PneumoniaMNIST...
+  0%|                                                                                                                                                          | 0.00/4.17M [00:00<?, ?B/s]  1%|█▏                                                                                                                                                | 32.8k/4.17M [00:00<00:13, 304kB/s]  2%|██▎                                                                                                                                               | 65.5k/4.17M [00:00<00:13, 306kB/s]  3%|████▌                                                                                                                                              | 131k/4.17M [00:00<00:09, 446kB/s]  6%|█████████▏                                                                                                                                         | 262k/4.17M [00:00<00:05, 754kB/s] 13%|██████████████████▎                                                                                                                               | 524k/4.17M [00:00<00:02, 1.37MB/s] 26%|█████████████████████████████████████▌                                                                                                           | 1.08M/4.17M [00:00<00:01, 2.67MB/s] 52%|███████████████████████████████████████████████████████████████████████████▏                                                                     | 2.16M/4.17M [00:00<00:00, 5.10MB/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4.17M/4.17M [00:00<00:00, 5.21MB/s]
+  ✅  Downloaded — train: (4708, 28, 28), test: (624, 28, 28)
+
+  [2/4] Splitting into federated client datasets...
+
+  Patient-aware splitting strategy:
+  The PneumoniaMNIST train/test split was constructed
+  from the source dataset to avoid patient overlap.
+  We further split the training set by class-balanced
+  halves to simulate two independent client sites.
+
+[gs_1ch] Normalized [0, 255] → [0, 1] (divided by 255).
+[gs_1ch] Normalized [0, 255] → [0, 1] (divided by 255).
+[gs_1ch] Normalized [0, 255] → [0, 1] (divided by 255).
+  Site 1 : (2354, 28, 28) images
+    normal=607, pneumonia=1747
+  Site 2 : (2354, 28, 28) images
+    normal=607, pneumonia=1747
+  Test   : (624, 28, 28) images
+    normal=234, pneumonia=390
+
+  ✅  All shape and value checks passed
+
+  [3/4] Saving datasets...
+  ✅  site1_train.npy  — 7.0 MB
+  ✅  site2_train.npy  — 7.0 MB
+  ✅  test.npy         — 1.9 MB
+  ✅  labels saved
+
+  [4/4] Saving split metadata...
+  ✅  split_info.json saved
+
+  ──────────────────────────────────────────────────
+  ✅  Data preparation complete.
+
+  Files saved to:
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/site1_labels.npy
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/site1_train.npy
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/site2_labels.npy
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/site2_train.npy
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/test.npy
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/test_labels.npy
+    /home/jupyter/GS-NVFlare/tests/03_e2e/data/raw/split_info.json
+
+  Next step:
+    python tests/03_e2e/run_e2e_test.py
+
+[gs_1ch] Running GPU probe on NVIDIA L4 (22.0 GB)...
+[gs_1ch] Probe complete — 5.975e-09 sec/pixel/iteration. Diagnostic saved to /home/jupyter/GS-NVFlare/tests/03_e2e/workspace_gs/site-1/local/gs_1ch_diagnostic.txt
+[gs_1ch] Diagnostic ready — GPU: NVIDIA L4 (21.9 GB) | safe VRAM: 18.7 GB | probe: 5.975e-09 sec/pixel/iter
+  Diagnostic ready for site-1: NVIDIA L4
+[gs_1ch] Running GPU probe on NVIDIA L4 (22.0 GB)...
+[gs_1ch] Probe complete — 5.552e-09 sec/pixel/iteration. Diagnostic saved to /home/jupyter/GS-NVFlare/tests/03_e2e/workspace_gs/site-2/local/gs_1ch_diagnostic.txt
+[gs_1ch] Diagnostic ready — GPU: NVIDIA L4 (21.9 GB) | safe VRAM: 18.7 GB | probe: 5.552e-09 sec/pixel/iter
+  Diagnostic ready for site-2: NVIDIA L4
+
+  GSTransformFL — End-to-End Test
+  ══════════════════════════════════════════════════
+  Repo root   : /home/jupyter/GS-NVFlare
+  Data dir    : /home/jupyter/GS-NVFlare/tests/03_e2e/data
+  Results dir : /home/jupyter/GS-NVFlare/tests/03_e2e/results
+
+  Step 1 — Data preparation
+  ──────────────────────────────────────────────────
+  Downloading and splitting PneumoniaMNIST...
+  ✅  Data preparation
+
+  Site 1 : 2,354 images
+  Site 2 : 2,354 images
+  Test   : 624 images
+
+  Step 2 — GS Transform (GSTransformFL)
+  ──────────────────────────────────────────────────
+  Building GS transform job...
+  Running GPU diagnostic pre-flight...
+
+  Running: /home/jupyter/GS-NVFlare/tests/environment/gs_test_env/bin/nvflare simulator /home/jupyter/GS-NVFlare/tests/03_e2e/job_gs --workspace /home/jupyter/GS-NVFlare/tests/03_e2e/workspace_gs --n_clients 2 --clients site-1,site-2 --threads 2
+  ✅  GS transform — site-1 and site-2 (12.4s)
+
+  Step 3 — Federated Training (3 rounds FedAvg)
+  ──────────────────────────────────────────────────
+  Building FL training job...
+  Running: /home/jupyter/GS-NVFlare/tests/environment/gs_test_env/bin/nvflare simulator /home/jupyter/GS-NVFlare/tests/03_e2e/job_train --workspace /home/jupyter/GS-NVFlare/tests/03_e2e/workspace_train --n_clients 2 --clients site-1,site-2 --threads 2
+  ✅  FL training — 3 rounds (22.4s)
+
+  Step 4 — Results
+  ──────────────────────────────────────────────────
+
+  ╔══════════════════════════════════════════════════╗
+  ║     GSTransformFL — E2E Test Results             ║
+  ╠══════════════════════════════════════════════════╣
+  ║  Dataset   : PneumoniaMNIST                      ║
+  ║  Transform : GS (iter=50, maskP=0.0)             ║
+  ║  FL rounds : 3                                   ║
+  ║  Clients   : 2 simulated sites                   ║
+  ╠══════════════════════════════════════════════════╣
+  ║  Round 1  test_acc=0.7516  train_loss=0.4836          ║
+  ║  Round 2  test_acc=0.8365  train_loss=0.2587          ║
+  ║  Round 3  test_acc=0.8205  train_loss=0.2089          ║
+  ╠══════════════════════════════════════════════════╣
+  ║  Final test accuracy : 0.8205                     ║
+  ╚══════════════════════════════════════════════════╝
+
+  ✅  Results saved — final accuracy: 0.8205
+
+  ══════════════════════════════════════════════════
+  Steps passed : 4
+  Steps failed : 0
+
+  ✅  E2E test PASSED.
+
+  Output files:
+    Transformed site-1 : /home/jupyter/GS-NVFlare/tests/03_e2e/data/output/site-1/images_transformed.npy
+    Transformed site-2 : /home/jupyter/GS-NVFlare/tests/03_e2e/data/output/site-2/images_transformed.npy
+    Global model       : /home/jupyter/GS-NVFlare/tests/03_e2e/results/global_model.pt
+    Training results   : /home/jupyter/GS-NVFlare/tests/03_e2e/results/training_results.json
+

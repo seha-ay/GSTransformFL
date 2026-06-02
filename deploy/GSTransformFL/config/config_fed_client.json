@@ -1,0 +1,25 @@
+{
+  "format_version": 2,
+
+  "task_data_filters": [],
+  "task_result_filters": [],
+
+  "executors": [
+    {
+      "tasks": ["gs_transform"],
+      "executor": {
+        "path": "gs_1ch.executor.gs_executor.GS1chExecutor",
+        "args": {
+          "input_path"       : "{GS_INPUT_PATH}",
+          "output_path"      : "{GS_OUTPUT_PATH}",
+          "iter_count"       : 50,
+          "maskP"            : 0.0,
+          "auto_chunk"       : true,
+          "verbose"          : true,
+          "time_budget_warn" : 300,
+          "time_budget_slow" : 1800
+        }
+      }
+    }
+  ]
+}

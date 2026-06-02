@@ -1,0 +1,12 @@
+# ============================================================
+# gs_1ch NVFlare package dependencies
+# ============================================================
+
+# Core
+numpy>=1.23.0
+cupy-cuda12x>=12.0.0        # adjust cuda version to match your environment
+nvflare>=2.4.0
+
+# Progress bar (optional but recommended)
+tqdm>=4.65.0
+ipywidgets>=8.0.0            # only needed in Jupyter environments

@@ -1,0 +1,110 @@
+# ============================================================
+# Dockerfile.template
+# Container template for GSTransformFL federated deployment.
+#
+# INSTRUCTIONS FOR WHOEVER COMPLETES THIS:
+#   1. Choose a base image matching your training framework
+#      (PyTorch, TensorFlow, etc.) — see TODO below.
+#   2. Add your model dependencies in the marked section.
+#   3. Build: docker build -t gstransformfl .
+#   4. Run:   docker run --gpus all --env-file site.env gstransformfl
+#
+# PREREQUISITES:
+#   - NVIDIA Container Toolkit installed on the host machine
+#   - CUDA driver >= 12.4 on the host machine
+#   - Docker >= 20.10
+# ============================================================
+
+# ── TODO: Replace with your training framework base image ─────────────────────
+# Examples:
+#   PyTorch  : nvcr.io/nvidia/pytorch:24.01-py3
+#   TensorFlow: nvcr.io/nvidia/tensorflow:24.01-tf2-py3
+#   Plain CUDA: nvidia/cuda:12.4.0-runtime-ubuntu22.04
+# ─────────────────────────────────────────────────────────────────────────────
+FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
+
+LABEL maintainer="GSTransformFL"
+LABEL description="GS Single-Channel Transform — NVFlare federated client"
+LABEL version="0.1.0"
+
+
+# ── System dependencies ───────────────────────────────────────────────────────
+RUN apt-get update && apt-get install -y \
+    python3.10 \
+    python3-pip \
+    python3.10-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ln -sf /usr/bin/python3.10 /usr/bin/python
+RUN ln -sf /usr/bin/pip3 /usr/bin/pip
+
+
+
+# ── Python dependencies ───────────────────────────────────────────────────────
+# Core GSTransformFL requirements
+RUN pip install --no-cache-dir \
+    numpy>=1.23.0 \
+    nvflare>=2.7.0 \
+    tqdm>=4.65.0 \
+    cupy-cuda12x>=12.0.0
+
+# ── TODO: Add your model/training framework dependencies here ─────────────────
+# Examples:
+#   torch>=2.0.0
+#   torchvision>=0.15.0
+#   tensorflow>=2.12.0
+#   monai>=1.2.0
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+
+
+# ── Install GSTransformFL package ─────────────────────────────────────────────
+WORKDIR /opt/GSTransformFL
+COPY . .
+RUN pip install --no-cache-dir -e .
+
+
+
+# ── Directories ───────────────────────────────────────────────────────────────
+# These are mount points — actual data is never baked into the image.
+# Mount your data at runtime using -v flags or docker-compose volumes.
+RUN mkdir -p /data/input \
+             /data/output \
+             /nvflare_workspace
+
+# ── TODO: Add your model directory here ───────────────────────────────────────
+# Example:
+#   RUN mkdir -p /model/weights
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+
+# ── Default environment variables ─────────────────────────────────────────────
+# These are defaults only — override at runtime via --env-file site.env
+# or -e flags when running the container.
+ENV GS_INPUT_PATH=/data/input/images.npy
+ENV GS_OUTPUT_PATH=/data/output/images_transformed.npy
+ENV GS_OVERRIDE_PARAMS_PATH=""
+ENV GS_NVFLARE_WORKSPACE=/nvflare_workspace
+
+# ── TODO: Add your model environment variables here ───────────────────────────
+# Example:
+#   ENV MODEL_WEIGHTS_PATH=/model/weights/model.pt
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ── Pre-flight check on container start ──────────────────────────────────────
+# Runs preflight_check.py before starting NVFlare.
+# If preflight fails the container exits with code 1 — job never starts.
+COPY scripts/preflight_check.py /opt/GSTransformFL/scripts/
+
+# ── TODO: Replace with your NVFlare startup command ───────────────────────────
+# This will depend on your NVFlare provisioning setup.
+# Example for a provisioned client site:
+#   CMD ["bash", "-c", \
+#        "python scripts/preflight_check.py && \
+#         bash /nvflare_workspace/startup/start.sh"]
+# ─────────────────────────────────────────────────────────────────────────────
+CMD ["python", "scripts/preflight_check.py"]
+

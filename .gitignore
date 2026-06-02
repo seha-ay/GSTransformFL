@@ -1,0 +1,71 @@
+# ============================================================
+# .gitignore for GSTransformFL / GS-NVFlare
+# ============================================================
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+tests/environment/gs_test_env/
+venv/
+env/
+.env/
+
+# ── Test data — never commit raw or transformed image data ───────────────────
+tests/03_e2e/data/raw/
+tests/03_e2e/data/output/
+tests/03_e2e/data/test/
+tests/03_e2e/data/medmnist_cache/
+
+# ── Test workspaces and job folders — generated at runtime ───────────────────
+tests/03_e2e/workspace_gs/
+tests/03_e2e/workspace_train/
+tests/03_e2e/job_gs/
+tests/03_e2e/job_train/
+
+# ── Model weights — too large for git ────────────────────────────────────────
+tests/03_e2e/results/global_model.pt
+*.pt
+*.pth
+*.ckpt
+
+# ── NVFlare workspaces ────────────────────────────────────────────────────────
+nvflare_workspace/
+nvflare_sim_workspace/
+nvflare_sim_job/
+deploy/GSTransformFL/nvflare_workspace/
+
+# ── Diagnostic files — machine-specific ──────────────────────────────────────
+gs_1ch_diagnostic.txt
+gs_1ch_init_diagnostic.txt
+gs_1ch_preflight_test.txt
+
+# ── OS and editor ─────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Accidental pip redirect files ─────────────────────────────────────────────
+=*.0
+=*.x
+
+# ── Temp files ────────────────────────────────────────────────────────────────
+*.tmp
+*.log.tmp
+/tmp/
+app/
+tests/03_e2e/results/

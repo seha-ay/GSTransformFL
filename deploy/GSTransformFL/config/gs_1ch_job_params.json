@@ -1,0 +1,6 @@
+{
+  "_description": "Server-side parameter override for GSTransformFL. Values here take precedence over all client local configs. Set GS_OVERRIDE_PARAMS_PATH in site_vars.sh to the path of this file to activate. Remove this _description key before use.",
+
+  "iter_count": 50,
+  "maskP": 0.0
+}
